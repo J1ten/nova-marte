@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercício Estagiário — Python + SQL + Power BI</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161d;
+    --card: #1a1e28;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #fb923c;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --python: #3b82f6;
+    --sql: #8b5cf6;
+    --pbi: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    line-height: 1.7;
+    padding: 2rem 1rem;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge-row {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    padding: .25rem .75rem;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  .badge-py  { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb; }
+  .badge-sql { background: #2e1a5e; color: #c4b5fd; border: 1px solid #7c3aed; }
+  .badge-pbi { background: #3d2400; color: #fbbf24; border: 1px solid #d97706; }
+  .badge-lvl { background: #0f2e1a; color: #6ee7b7; border: 1px solid #059669; }
+
+  h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: .75rem;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: .95rem;
+    max-width: 600px;
+  }
+
+  /* OVERVIEW CARDS */
+  .overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .ov-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .ov-icon { font-size: 1.8rem; margin-bottom: .5rem; }
+  .ov-label { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .ov-value { font-size: 1rem; font-weight: 600; margin-top: .2rem; }
+
+  /* SECTION */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-header:hover { background: rgba(255,255,255,.02); }
+
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: .85rem;
+    flex-shrink: 0;
+  }
+
+  .step-py  { background: #1e3a5f; color: #60a5fa; }
+  .step-sql { background: #2e1a5e; color: #c4b5fd; }
+  .step-pbi { background: #3d2400; color: #fbbf24; }
+  .step-bonus { background: #0d2b1e; color: #6ee7b7; }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .lang-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    padding: .2rem .6rem;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  .section-body {
+    padding: 1.5rem;
+  }
+
+  /* CODE BLOCK */
+  pre {
+    background: #090b10;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    line-height: 1.8;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .code-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .4rem;
+  }
+
+  .kw   { color: #f472b6; }
+  .fn   { color: #60a5fa; }
+  .str  { color: #6ee7b7; }
+  .cmt  { color: #475569; font-style: italic; }
+  .num  { color: #fb923c; }
+  .var  { color: #e2e8f0; }
+  .sql-kw { color: #c4b5fd; }
+  .sql-fn { color: #60a5fa; }
+  .sql-str { color: #6ee7b7; }
+
+  /* TASK LIST */
+  .task-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    margin: 1rem 0;
+  }
+
+  .task-list li {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    font-size: .92rem;
+  }
+
+  .task-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+    margin-top: .05rem;
+  }
+
+  /* PBI STEPS */
+  .pbi-steps {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    margin: 1rem 0;
+  }
+
+  .pbi-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .pbi-num {
+    width: 26px; height: 26px;
+    background: #3d2400;
+    color: #fbbf24;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: .8rem;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .pbi-text { font-size: .9rem; }
+  .pbi-text strong { color: #fbbf24; }
+
+  /* TIP BOX */
+  .tip {
+    background: #0a1628;
+    border: 1px solid #1e3a5f;
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: .88rem;
+    color: #94a3b8;
+    margin: 1rem 0;
+  }
+
+  .tip strong { color: var(--accent); }
+
+  /* DELIVERABLES */
+  .deliverables {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .del-card {
+    background: #0d0f14;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .del-icon { font-size: 1.4rem; margin-bottom: .4rem; }
+  .del-title { font-size: .85rem; font-weight: 600; margin-bottom: .25rem; }
+  .del-desc { font-size: .8rem; color: var(--muted); }
+
+  /* SCHEMA TABLE */
+  .schema-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+    font-family: 'JetBrains Mono', monospace;
+    margin: 1rem 0;
+  }
+
+  .schema-table th {
+    background: #090b10;
+    color: var(--muted);
+    text-align: left;
+    padding: .6rem .75rem;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .schema-table td {
+    padding: .55rem .75rem;
+    border-bottom: 1px solid #1a1e28;
+    color: var(--text);
+  }
+
+  .schema-table tr:last-child td { border-bottom: none; }
+  .schema-table .type { color: #c4b5fd; }
+  .schema-table .pk { color: #fbbf24; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .8rem;
+  }
+
+  .footer strong { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge-row">
+      <span class="badge badge-lvl">🎓 Nível Estagiário</span>
+      <span class="badge badge-py">Python</span>
+      <span class="badge badge-sql">SQL</span>
+      <span class="badge badge-pbi">Power BI</span>
+    </div>
+    <h1>Dashboard de <span>Vendas por Região</span><br>— Pipeline Completo de Dados</h1>
+    <p class="subtitle">Você vai simular o papel de um analista de dados júnior: gerar dados com Python, armazená-los num banco SQL e visualizá-los no Power BI.</p>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="overview">
+    <div class="ov-card">
+      <div class="ov-icon">⏱️</div>
+      <div class="ov-label">Duração estimada</div>
+      <div class="ov-value">3 – 5 horas</div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-icon">🛠️</div>
+      <div class="ov-label">Ferramentas</div>
+      <div class="ov-value">Python · SQLite · Power BI</div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-icon">📦</div>
+      <div class="ov-label">Libs Python</div>
+      <div class="ov-value">pandas · faker · sqlite3</div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-icon">🎯</div>
+      <div class="ov-label">Entrega final</div>
+      <div class="ov-value">Dashboard .pbix</div>
+    </div>
+  </div>
+
+  <!-- CONTEXTO -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num step-py">📋</div>
+      <div class="section-title">Contexto do Projeto</div>
+    </div>
+    <div class="section-body">
+      <p>Você foi contratado como estagiário de dados numa empresa fictícia chamada <strong>NovaMart</strong>, uma rede de varejo com lojas em 5 regiões do Brasil. O gestor pediu um relatório mensal de vendas e você vai construir todo o pipeline do zero:</p>
+      <ul class="task-list">
+        <li><strong>Etapa 1 (Python):</strong> Gerar uma base de dados falsa de vendas usando a biblioteca Faker e salvar num banco SQLite.</li>
+        <li><strong>Etapa 2 (SQL):</strong> Criar as tabelas, inserir os dados e escrever queries de análise.</li>
+        <li><strong>Etapa 3 (Power BI):</strong> Conectar ao banco SQLite, criar medidas DAX e montar o dashboard final.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ETAPA 1: PYTHON -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num step-py">01</div>
+      <div class="section-title">Etapa 1 — Geração de Dados com Python</div>
+      <span class="lang-tag badge-py">Python</span>
+    </div>
+    <div class="section-body">
+      <p>Crie um arquivo chamado <code style="color:#60a5fa">gerar_dados.py</code>. Ele vai gerar <strong>500 registros de venda</strong> falsos e salvar no banco SQLite <code style="color:#60a5fa">novamart.db</code>.</p>
+
+      <div class="tip">
+        <strong>📦 Instale as dependências antes:</strong><br>
+        <code>pip install faker pandas</code>
+      </div>
+
+      <div class="code-label">gerar_dados.py</div>
+      <pre><span class="kw">import</span> <span class="var">sqlite3</span>
+<span class="kw">import</span> <span class="var">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">from</span> <span class="var">faker</span> <span class="kw">import</span> <span class="fn">Faker</span>
+<span class="kw">import</span> <span class="var">random</span>
+<span class="kw">from</span> <span class="var">datetime</span> <span class="kw">import</span> <span class="fn">date</span>
+
+<span class="var">fake</span> = <span class="fn">Faker</span>(<span class="str">'pt_BR'</span>)
+<span class="var">random</span>.<span class="fn">seed</span>(<span class="num">42</span>)
+
+<span class="cmt"># --- Dados fixos de referência ---</span>
+<span class="var">regioes</span> = [<span class="str">'Norte'</span>, <span class="str">'Nordeste'</span>, <span class="str">'Centro-Oeste'</span>, <span class="str">'Sudeste'</span>, <span class="str">'Sul'</span>]
+<span class="var">categorias</span> = [<span class="str">'Eletrônicos'</span>, <span class="str">'Roupas'</span>, <span class="str">'Alimentos'</span>, <span class="str">'Móveis'</span>, <span class="str">'Esportes'</span>]
+
+<span class="cmt"># --- Gerar tabela de vendas ---</span>
+<span class="var">registros</span> = []
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">500</span>):
+    <span class="var">registros</span>.<span class="fn">append</span>({
+        <span class="str">'id_venda'</span>:   <span class="var">i</span> + <span class="num">1</span>,
+        <span class="str">'data_venda'</span>: <span class="var">fake</span>.<span class="fn">date_between</span>(
+                         <span class="var">start_date</span>=<span class="fn">date</span>(<span class="num">2024</span>, <span class="num">1</span>, <span class="num">1</span>),
+                         <span class="var">end_date</span>=<span class="fn">date</span>(<span class="num">2024</span>, <span class="num">12</span>, <span class="num">31</span>)
+                      ),
+        <span class="str">'regiao'</span>:     <span class="var">random</span>.<span class="fn">choice</span>(<span class="var">regioes</span>),
+        <span class="str">'categoria'</span>:  <span class="var">random</span>.<span class="fn">choice</span>(<span class="var">categorias</span>),
+        <span class="str">'vendedor'</span>:   <span class="var">fake</span>.<span class="fn">name</span>(),
+        <span class="str">'valor'</span>:      <span class="fn">round</span>(<span class="var">random</span>.<span class="fn">uniform</span>(<span class="num">50</span>, <span class="num">5000</span>), <span class="num">2</span>),
+        <span class="str">'quantidade'</span>: <span class="var">random</span>.<span class="fn">randint</span>(<span class="num">1</span>, <span class="num">20</span>),
+    })
+
+<span class="var">df</span> = <span class="var">pd</span>.<span class="fn">DataFrame</span>(<span class="var">registros</span>)
+
+<span class="cmt"># --- Salvar no SQLite ---</span>
+<span class="var">conn</span> = <span class="var">sqlite3</span>.<span class="fn">connect</span>(<span class="str">'novamart.db'</span>)
+<span class="var">df</span>.<span class="fn">to_sql</span>(<span class="str">'vendas'</span>, <span class="var">conn</span>,
+           <span class="var">if_exists</span>=<span class="str">'replace'</span>, <span class="var">index</span>=<span class="kw">False</span>)
+<span class="var">conn</span>.<span class="fn">close</span>()
+
+<span class="fn">print</span>(<span class="str">f"✅ {len(df)} registros salvos em novamart.db"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>())</pre>
+
+      <p><strong>Tarefas desta etapa:</strong></p>
+      <ul class="task-list">
+        <li>Rode o script e confirme que o arquivo <code style="color:#60a5fa">novamart.db</code> foi criado.</li>
+        <li>Adicione uma coluna <code style="color:#60a5fa">ticket_medio</code> calculada como <code>valor / quantidade</code>.</li>
+        <li><strong>[Desafio]</strong> Crie uma segunda tabela chamada <code>metas</code> com meta de R$ 50.000 por região por mês e salve também no banco.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ETAPA 2: SQL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num step-sql">02</div>
+      <div class="section-title">Etapa 2 — Análise com SQL</div>
+      <span class="lang-tag badge-sql">SQL · SQLite</span>
+    </div>
+    <div class="section-body">
+      <p>Com o banco criado, use qualquer cliente SQL (DB Browser for SQLite, DBeaver ou o próprio Python) para executar as queries abaixo. Entenda o que cada uma retorna.</p>
+
+      <p style="margin-top:1rem;font-weight:600">Schema da tabela <code style="color:#c4b5fd">vendas</code>:</p>
+      <table class="schema-table">
+        <thead>
+          <tr>
+            <th>Coluna</th><th>Tipo</th><th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="pk">id_venda</td><td class="type">INTEGER</td><td>Chave primária</td></tr>
+          <tr><td>data_venda</td><td class="type">TEXT</td><td>Data no formato YYYY-MM-DD</td></tr>
+          <tr><td>regiao</td><td class="type">TEXT</td><td>Uma das 5 regiões do Brasil</td></tr>
+          <tr><td>categoria</td><td class="type">TEXT</td><td>Categoria do produto</td></tr>
+          <tr><td>vendedor</td><td class="type">TEXT</td><td>Nome do vendedor</td></tr>
+          <tr><td>valor</td><td class="type">REAL</td><td>Valor total da venda</td></tr>
+          <tr><td>quantidade</td><td class="type">INTEGER</td><td>Quantidade de itens</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-label">Query 1 — Total de vendas por região</div>
+      <pre><span class="sql-kw">SELECT</span>
+    <span class="var">regiao</span>,
+    <span class="sql-fn">COUNT</span>(*) <span class="sql-kw">AS</span> <span class="var">qtd_vendas</span>,
+    <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span>(<span class="var">valor</span>), <span class="num">2</span>) <span class="sql-kw">AS</span> <span class="var">total_vendas</span>
+<span class="sql-kw">FROM</span> <span class="var">vendas</span>
+<span class="sql-kw">GROUP BY</span> <span class="var">regiao</span>
+<span class="sql-kw">ORDER BY</span> <span class="var">total_vendas</span> <span class="sql-kw">DESC</span>;</pre>
+
+      <div class="code-label">Query 2 — Ranking de categorias por receita</div>
+      <pre><span class="sql-kw">SELECT</span>
+    <span class="var">categoria</span>,
+    <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span>(<span class="var">valor</span>), <span class="num">2</span>) <span class="sql-kw">AS</span> <span class="var">ticket_medio</span>,
+    <span class="sql-fn">SUM</span>(<span class="var">quantidade</span>)       <span class="sql-kw">AS</span> <span class="var">itens_vendidos</span>
+<span class="sql-kw">FROM</span> <span class="var">vendas</span>
+<span class="sql-kw">GROUP BY</span> <span class="var">categoria</span>
+<span class="sql-kw">ORDER BY</span> <span class="var">ticket_medio</span> <span class="sql-kw">DESC</span>;</pre>
+
+      <div class="code-label">Query 3 — Evolução mensal de vendas</div>
+      <pre><span class="sql-kw">SELECT</span>
+    <span class="sql-fn">STRFTIME</span>(<span class="str">'%Y-%m'</span>, <span class="var">data_venda</span>) <span class="sql-kw">AS</span> <span class="var">mes</span>,
+    <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span>(<span class="var">valor</span>), <span class="num">2</span>)           <span class="sql-kw">AS</span> <span class="var">receita_mensal</span>
+<span class="sql-kw">FROM</span> <span class="var">vendas</span>
+<span class="sql-kw">GROUP BY</span> <span class="var">mes</span>
+<span class="sql-kw">ORDER BY</span> <span class="var">mes</span>;</pre>
+
+      <p style="margin-top:1.25rem"><strong>Tarefas desta etapa:</strong></p>
+      <ul class="task-list">
+        <li>Execute as 3 queries e copie os resultados para um arquivo <code style="color:#c4b5fd">resultados.txt</code>.</li>
+        <li>Escreva uma query que mostre o <strong>Top 5 vendedores</strong> com maior receita total.</li>
+        <li><strong>[Desafio]</strong> Escreva uma query que calcule o mês com maior crescimento percentual de receita em relação ao mês anterior (use <code style="color:#c4b5fd">LAG()</code>).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ETAPA 3: POWER BI -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num step-pbi">03</div>
+      <div class="section-title">Etapa 3 — Dashboard no Power BI</div>
+      <span class="lang-tag badge-pbi">Power BI</span>
+    </div>
+    <div class="section-body">
+      <p>Agora conecte o Power BI Desktop ao seu banco <code style="color:#fbbf24">novamart.db</code> e monte o dashboard.</p>
+
+      <div class="pbi-steps">
+        <div class="pbi-step">
+          <div class="pbi-num">1</div>
+          <div class="pbi-text"><strong>Conectar ao SQLite:</strong> Obter Dados → ODBC → DSN ou string de conexão apontando para o arquivo <code>novamart.db</code>. Se necessário, instale o driver <strong>SQLite ODBC Driver</strong> (gratuito).</div>
+        </div>
+        <div class="pbi-step">
+          <div class="pbi-num">2</div>
+          <div class="pbi-text"><strong>Criar coluna calculada no Power Query:</strong> adicione <code>Ticket Médio = [valor] / [quantidade]</code> direto no editor.</div>
+        </div>
+        <div class="pbi-step">
+          <div class="pbi-num">3</div>
+          <div class="pbi-text"><strong>Criar medidas DAX:</strong> <br><code style="color:#fbbf24">Total Receita = SUM(vendas[valor])</code><br><code style="color:#fbbf24">Qtd Vendas = COUNTROWS(vendas)</code><br><code style="color:#fbbf24">Ticket Médio = DIVIDE([Total Receita], [Qtd Vendas])</code></div>
+        </div>
+        <div class="pbi-step">
+          <div class="pbi-num">4</div>
+          <div class="pbi-text"><strong>Montar os visuais obrigatórios:</strong>
+            <ul style="margin-top:.4rem;margin-left:1rem;font-size:.88rem;color:#94a3b8">
+              <li>3 Cartões: Total Receita, Qtd Vendas, Ticket Médio</li>
+              <li>Gráfico de barras: Receita por Região</li>
+              <li>Gráfico de linhas: Evolução mensal</li>
+              <li>Gráfico de pizza: Receita por Categoria</li>
+              <li>Tabela: Top 10 Vendedores</li>
+            </ul>
+          </div>
+        </div>
+        <div class="pbi-step">
+          <div class="pbi-num">5</div>
+          <div class="pbi-text"><strong>Adicionar um slicer (filtro):</strong> por Região e por Categoria para tornar o dashboard interativo.</div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <strong>💡 Alternativa ao ODBC:</strong> Se tiver dificuldade com a conexão SQLite no Power BI, você pode exportar os dados com Python usando <code>df.to_csv('vendas.csv')</code> e conectar via CSV. O aprendizado de SQL e Python continua válido!
+      </div>
+    </div>
+  </div>
+
+  <!-- BÔNUS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num step-bonus">⭐</div>
+      <div class="section-title">Desafio Bônus — Para quem quiser ir além</div>
+    </div>
+    <div class="section-body">
+      <ul class="task-list">
+        <li>Crie um segundo script Python <code style="color:#6ee7b7">relatorio_cli.py</code> que conecte ao banco e imprima um resumo de vendas formatado no terminal (use <code>tabulate</code>).</li>
+        <li>Adicione uma coluna <code>status</code> no Power BI usando DAX que classifique cada venda como <em>"Alta"</em>, <em>"Média"</em> ou <em>"Baixa"</em> com base no valor.</li>
+        <li>Suba o projeto no GitHub com um <code>README.md</code> explicando cada etapa — isso vira portfólio!</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ENTREGÁVEIS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num step-py">📁</div>
+      <div class="section-title">O que entregar ao final</div>
+    </div>
+    <div class="section-body">
+      <div class="deliverables">
+        <div class="del-card">
+          <div class="del-icon">🐍</div>
+          <div class="del-title">gerar_dados.py</div>
+          <div class="del-desc">Script Python que gera e salva os dados no banco</div>
+        </div>
+        <div class="del-card">
+          <div class="del-icon">🗄️</div>
+          <div class="del-title">novamart.db</div>
+          <div class="del-desc">Banco SQLite com as tabelas criadas</div>
+        </div>
+        <div class="del-card">
+          <div class="del-icon">📝</div>
+          <div class="del-title">queries.sql</div>
+          <div class="del-desc">Arquivo com todas as queries escritas</div>
+        </div>
+        <div class="del-card">
+          <div class="del-icon">📊</div>
+          <div class="del-title">dashboard.pbix</div>
+          <div class="del-desc">Dashboard final no Power BI Desktop</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Exercício criado com <strong>Claude</strong> · NovaMart é uma empresa fictícia criada para fins educacionais.
+  </div>
+
+</div>
+</body>
+</html>
