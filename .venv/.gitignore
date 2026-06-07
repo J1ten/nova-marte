@@ -1,0 +1,21 @@
+# Ambiente virtual Python
+.venv/
+venv/
+env/
+ 
+# Cache do Python
+__pycache__/
+*.py[cod]
+*.pyo
+ 
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+ 
+# Arquivos temporários do Power BI
+*.pbix.bak
+ 
+# Arquivos de configuração local
+*.cfg
+*.ini
+ 
